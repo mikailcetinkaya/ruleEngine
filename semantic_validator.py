@@ -2,154 +2,123 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from typing import Dict, List, Tuple
 import logging
+import uuid
+from vector_db import VectorDB
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 class SemanticValidator:
     def __init__(self, model_name: str = 'all-MiniLM-L6-v2'):
-        """
-        Initialize the SemanticValidator with configurable parameters
-
-        Args:
-            model_name: Name of the sentence transformer model to use
-        """
+        """Initialize the SemanticValidator with vector database integration"""
         self.model = SentenceTransformer(model_name)
+        self.vector_db = VectorDB()
         self.similarity_threshold = 0.8
-        self.min_context_length = 10  # Minimum context length to analyze
+        self.min_context_length = 10
 
     def get_embeddings(self, text: str) -> np.ndarray:
         """Generate embeddings for the given text"""
-        # Clean and preprocess text
         cleaned_text = self._preprocess_text(text)
         if not cleaned_text:
-            return np.zeros(384)  # Return zero vector for empty text
+            return np.zeros(384)
         return self.model.encode([cleaned_text])[0]
 
     def _preprocess_text(self, text: str) -> str:
         """Preprocess text for better embedding generation"""
         if not isinstance(text, str):
             return ""
-
-        # Basic cleaning
-        cleaned = text.strip()
-        # Remove excessive whitespace
-        cleaned = ' '.join(cleaned.split())
+        cleaned = ' '.join(text.strip().split())
         return cleaned
 
-    def calculate_similarity(self, embedding1: np.ndarray, embedding2: np.ndarray) -> float:
-        """
-        Calculate cosine similarity between two embeddings with error handling
-        """
-        try:
-            if np.all(embedding1 == 0) or np.all(embedding2 == 0):
-                return 0.0
+    def store_rule_embeddings(self, rule: Dict) -> str:
+        """Store embeddings for a new valid rule"""
+        rule_id = str(uuid.uuid4())
+        context = rule.get('context', '')
+        segments = [s.strip() for s in context.split('\n') if s.strip()]
 
-            similarity = np.dot(embedding1, embedding2) / (
-                    np.linalg.norm(embedding1) * np.linalg.norm(embedding2)
-            )
-            return float(similarity)
-        except Exception as e:
-            logger.error(f"Error calculating similarity: {str(e)}")
-            return 0.0
-
-    def find_similar_segments(self, text1: str, text2: str) -> List[Tuple[str, str, float]]:
-        """
-        Find similar segments between two texts
-
-        Returns:
-            List of tuples containing (segment1, segment2, similarity_score)
-        """
-        # Split texts into sentences or meaningful segments
-        segments1 = [s.strip() for s in text1.split('\n') if s.strip()]
-        segments2 = [s.strip() for s in text2.split('\n') if s.strip()]
-
-        similar_pairs = []
-
-        for seg1 in segments1:
-            if len(seg1) < self.min_context_length:
+        for segment in segments:
+            if len(segment) < self.min_context_length:
                 continue
 
-            emb1 = self.get_embeddings(seg1)
+            embedding = self.get_embeddings(segment)
+            metadata = {
+                "title": rule.get('title', ''),
+                "created_at": rule.get('created_at', '')
+            }
+            
+            self.vector_db.store_embedding(
+                embedding=embedding,
+                text=segment,
+                rule_id=rule_id,
+                metadata=metadata
+            )
 
-            for seg2 in segments2:
-                if len(seg2) < self.min_context_length:
-                    continue
+        return rule_id
 
-                emb2 = self.get_embeddings(seg2)
-                similarity = self.calculate_similarity(emb1, emb2)
+    def find_similar_segments(self, text: str) -> List[Dict]:
+        """Find similar segments using vector database"""
+        segments = [s.strip() for s in text.split('\n') if s.strip()]
+        all_similar = []
 
-                if similarity >= self.similarity_threshold:
-                    similar_pairs.append((seg1, seg2, similarity))
+        for segment in segments:
+            if len(segment) < self.min_context_length:
+                continue
 
-        return similar_pairs
+            embedding = self.get_embeddings(segment)
+            similar = self.vector_db.search_similar(
+                embedding=embedding,
+                threshold=self.similarity_threshold
+            )
+            
+            if similar:
+                all_similar.extend(similar)
 
-    def check_semantic_overlap(self, rule1: Dict, rule2: Dict) -> Tuple[bool, List[Dict]]:
-        """
-        Check if two rules have semantic overlap and provide detailed feedback
+        return all_similar
 
-        Returns:
-            Tuple of (has_overlap: bool, overlap_details: List[Dict])
-        """
-        text1 = rule1.get('context', '')
-        text2 = rule2.get('context', '')
-
-        if not text1 or not text2:
+    def check_semantic_overlap(self, rule1: Dict, rule2: Dict = None) -> Tuple[bool, List[Dict]]:
+        """Check semantic overlap using vector database"""
+        text = rule1.get('context', '')
+        if not text:
             return False, []
 
-        similar_segments = self.find_similar_segments(text1, text2)
-
+        similar_segments = self.find_similar_segments(text)
+        
         if not similar_segments:
             return False, []
 
         overlap_details = [
             {
-                'segment1': seg1,
-                'segment2': seg2,
-                'similarity': round(score, 3)
+                'segment1': segment['text'],
+                'segment2': text,
+                'similarity': segment['similarity'],
+                'rule_id': segment['rule_id'],
+                'title': segment.get('title', '')
             }
-            for seg1, seg2, score in similar_segments
+            for segment in similar_segments
         ]
 
         return True, overlap_details
 
 
 def validate_rule(new_rule: Dict, existing_rules: List[Dict]) -> Dict:
-    """
-    Validate a new rule against existing rules with detailed feedback
-    """
+    """Validate a new rule and store if valid"""
     validator = SemanticValidator()
-    overlap_found = False
-    detailed_feedback = []
-
-    for existing_rule in existing_rules:
-        has_overlap, overlap_details = validator.check_semantic_overlap(new_rule, existing_rule)
-
-        if has_overlap:
-            overlap_found = True
-            detailed_feedback.append({
-                'rule_title': existing_rule['title'],
-                'overlaps': overlap_details
-            })
-
-    if overlap_found:
+    
+    # Check for semantic overlap
+    has_overlap, overlap_details = validator.check_semantic_overlap(new_rule)
+    
+    if has_overlap:
         return {
             "is_valid": False,
             "message": "Semantic overlap detected",
-            "details": detailed_feedback
+            "details": overlap_details
         }
-
+    
+    # If valid, store embeddings and return success
+    rule_id = validator.store_rule_embeddings(new_rule)
     return {
         "is_valid": True,
         "message": "Rule is valid",
-        "details": []
+        "details": [],
+        "rule_id": rule_id
     }
-
-
-if __name__ == "__main__":
-    # Example usage
-    validator = SemanticValidator()
-    rule1 = {"context": "Payment processing must use secure channels"}
-    rule2 = {"context": "All payments should be processed through encrypted channels"}
-    print(validator.check_semantic_overlap(rule1, rule2))

@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import List, Dict
 import streamlit as st
 
@@ -98,6 +99,7 @@ def main():
         if st.session_state.rules:
             st.subheader("Existing Rules")
             for idx, rule in enumerate(st.session_state.rules):
+                logging.error(f"Rule {idx}: {rule['title']}")
                 display_rule(rule, idx)
         else:
             st.info("No rules added yet. Create your first rule using the form on the left.")

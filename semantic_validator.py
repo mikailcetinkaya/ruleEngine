@@ -116,6 +116,7 @@ def validate_rule(new_rule: Dict, existing_rules: List[Dict]) -> Dict:
     
     # If valid, store embeddings and return success
     rule_id = validator.store_rule_embeddings(new_rule)
+    logging.error(f"rule id: {rule_id}")
     return {
         "is_valid": True,
         "message": "Rule is valid",

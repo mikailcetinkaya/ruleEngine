@@ -13,14 +13,14 @@ class SemanticValidator:
         """Initialize the SemanticValidator with vector database integration"""
         self.model = SentenceTransformer(model_name)
         self.vector_db = VectorDB()
-        self.similarity_threshold = 0.8
-        self.min_context_length = 10
+        self.similarity_threshold = 0.7
+        self.min_context_length = 5
 
     def get_embeddings(self, text: str) -> np.ndarray:
         """Generate embeddings for the given text"""
         cleaned_text = self._preprocess_text(text)
         if not cleaned_text:
-            return np.zeros(384)
+            return np.zeros(768)
         return self.model.encode([cleaned_text])[0]
 
     def _preprocess_text(self, text: str) -> str:
@@ -89,7 +89,6 @@ class SemanticValidator:
         overlap_details = [
             {
                 'segment1': segment['text'],
-                'segment2': text,
                 'similarity': segment['similarity'],
                 'rule_id': segment['rule_id'],
                 'title': segment.get('title', '')

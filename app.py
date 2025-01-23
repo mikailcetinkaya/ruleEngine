@@ -28,7 +28,7 @@ def display_rule(rule: Dict, index: int):
             st.text_area(
                 "Rule Context",
                 value=formatted_context,
-                height=200,
+                height=300,
                 key=f"context_{index}",
                 disabled=True
             )
@@ -68,7 +68,7 @@ def main():
         with st.form("rule_input_form"):
             context = st.text_area(
                 "Rule Context",
-                height=400,
+                height=300,
                 help="Enter the rule context. Use new lines for better readability."
             )
 
@@ -92,7 +92,7 @@ def main():
                     save_rules(st.session_state.rules)
                     st.success(f"Rule saved successfully! Generated title: {title}")
                 else:
-                    st.error(f"Rule validation failed: {validation_result['message']}")
+                    st.error(f"Rule validation failed: {validation_result['message']}\r\n{validation_result['details']}")
 
     with display_col:
         # Display existing rules

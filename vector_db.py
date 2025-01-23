@@ -26,7 +26,7 @@ class VectorDB:
                 self.client.create_collection(
                     collection_name=self.collection_name,
                     vectors_config=models.VectorParams(
-                        size=384,  # Size matches the MiniLM model's output
+                        size=768,  # Size matches the MiniLM model's output
                         distance=models.Distance.COSINE
                     )
                 )

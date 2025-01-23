@@ -16,3 +16,5 @@ pip install -r requirements.txt
 ```bash
 streamlit run app.py
 ```
+
+https://ui.qdrant.tech/#/Collections/delete_collection

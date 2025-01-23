@@ -88,7 +88,7 @@ class SemanticValidator:
 
         overlap_details = [
             {
-                'segment1': segment['text'],
+                'matched': segment['text'],
                 'similarity': segment['similarity'],
                 'rule_id': segment['rule_id'],
                 'title': segment.get('title', '')

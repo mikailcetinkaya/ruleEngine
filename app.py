@@ -15,7 +15,7 @@ def format_rule_context(context: str) -> str:
     return '\n'.join(lines)
 
 
-def display_rule(rule: Dict, index: int):
+def display_rule(rule: Dict, index: int, rule_manager: RuleManager):
     """Display a single rule with formatted context"""
     with st.expander(f"Rule {index + 1}: {rule['title']}", expanded=False):
         # Create columns for better layout
@@ -42,9 +42,8 @@ def display_rule(rule: Dict, index: int):
                 st.session_state.editing_rule = index
 
             if st.button("Delete", key=f"delete_{index}"):
-                if st.session_state.rules:
-                    st.session_state.rules.pop(index)
-                    save_rules(st.session_state.rules)
+                if rule_manager.delete_rule(index):  # Use RuleManager's delete_rule method
+                    st.session_state.rules = rule_manager.get_rules()
                     st.rerun()
 
 
@@ -52,13 +51,14 @@ def main():
     st.set_page_config(page_title="Rule Management System", layout="wide")
     st.title("Rule Management System")
 
+    # Initialize RuleManager instead of direct JSON operations
+    rule_manager = RuleManager()
+
     # Initialize session state
     if 'rules' not in st.session_state:
-        st.session_state.rules = load_rules()
+        st.session_state.rules = rule_manager.get_rules()
     if 'editing_rule' not in st.session_state:
         st.session_state.editing_rule = None
-
-    rule_manager = RuleManager()
 
     # Create two columns for layout
     input_col, display_col = st.columns([1, 1])
@@ -89,10 +89,11 @@ def main():
 
                 if validation_result["is_valid"]:
                     st.session_state.rules.append(new_rule)
-                    save_rules(st.session_state.rules)
+                    rule_manager.add_rule(new_rule, validation_result["rule_id"])
                     st.success(f"Rule saved successfully! Generated title: {title}")
                 else:
-                    st.error(f"Rule validation failed: {validation_result['message']}\r\n{validation_result['details']}")
+                    st.error(
+                        f"Rule validation failed: {validation_result['message']}\r\n{validation_result['details']}")
 
     with display_col:
         # Display existing rules
@@ -100,7 +101,7 @@ def main():
             st.subheader("Existing Rules")
             for idx, rule in enumerate(st.session_state.rules):
                 logging.error(f"Rule {idx}: {rule['title']}")
-                display_rule(rule, idx)
+                display_rule(rule, idx, rule_manager)
         else:
             st.info("No rules added yet. Create your first rule using the form on the left.")
 

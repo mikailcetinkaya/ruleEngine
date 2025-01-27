@@ -7,8 +7,17 @@ from litellm import completion
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class SemanticValidator:
-    def __init__(self, model_name: str = "gpt-3.5-turbo"):
+
+def format_rules_for_prompt(existing_rules: List[Dict]) -> str:
+    """Format existing rules for the prompt"""
+    formatted_rules = "Existing rules:\n"
+    for i, rule in enumerate(existing_rules, 1):
+        formatted_rules += f"{i}. {rule.get('title', 'Untitled')}: {rule.get('context', '')}\n"
+    return formatted_rules
+
+
+class LLMSemanticValidator:
+    def __init__(self, model_name: str = "gemini/gemini-1.5-flash"):
         """Initialize the SemanticValidator with LLM integration"""
         self.model = model_name
         self.system_prompt = """You are a rule validation assistant. Your task is to:
@@ -28,18 +37,11 @@ class SemanticValidator:
             return ""
         return ' '.join(text.strip().split())
 
-    def format_rules_for_prompt(self, existing_rules: List[Dict]) -> str:
-        """Format existing rules for the prompt"""
-        formatted_rules = "Existing rules:\n"
-        for i, rule in enumerate(existing_rules, 1):
-            formatted_rules += f"{i}. {rule.get('title', 'Untitled')}: {rule.get('context', '')}\n"
-        return formatted_rules
-
     def analyze_rule(self, new_rule: Dict, existing_rules: List[Dict]) -> Dict:
         """Analyze new rule against existing rules using LLM"""
 
         # Format the prompt
-        existing_rules_text = self.format_rules_for_prompt(existing_rules)
+        existing_rules_text = format_rules_for_prompt(existing_rules)
         new_rule_text = f"New rule to validate:\n{new_rule.get('title', 'Untitled')}: {new_rule.get('context', '')}"
 
         prompt = f"""
@@ -51,6 +53,8 @@ class SemanticValidator:
         1. Contradictions with existing rules
         2. Ambiguous statements
         3. Overlapping content with existing rules
+        4. Similar entities mentioned because similar entities should be grouped together
+        5. Rules with same meaning should not exist in existing rules
         
         Provide a structured response with:
         - Whether there are any issues (true/false)
@@ -86,9 +90,10 @@ class SemanticValidator:
                 "analysis": f"Error in analysis: {str(e)}"
             }
 
+
 def validate_rule(new_rule: Dict, existing_rules: List[Dict]) -> Dict:
     """Validate a new rule using LLM analysis"""
-    validator = SemanticValidator()
+    validator = LLMSemanticValidator()
 
     # Analyze the rule
     analysis_result = validator.analyze_rule(new_rule, existing_rules)

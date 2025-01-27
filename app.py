@@ -5,7 +5,7 @@ from typing import List, Dict
 import streamlit as st
 
 from rule_manager import RuleManager
-from semantic_validator import validate_rule
+from llm_rule_validator import validate_rule
 from title_generator import generate_title
 
 

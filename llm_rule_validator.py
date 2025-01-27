@@ -4,7 +4,11 @@ from typing import Dict, List
 
 from litellm import completion
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Define log format with timestamp
+                    datefmt='%Y-%m-%d %H:%M:%S'  # Customize the timestamp format
+                    )
+
 logger = logging.getLogger(__name__)
 
 
@@ -45,23 +49,36 @@ class LLMSemanticValidator:
         new_rule_text = f"New rule to validate:\n{new_rule.get('title', 'Untitled')}: {new_rule.get('context', '')}"
 
         prompt = f"""
-        {existing_rules_text}
-        
-        {new_rule_text}
-        
-        Analyze the new rule for:
-        1. Contradictions with existing rules
-        2. Ambiguous statements
-        3. Overlapping content with existing rules
-        4. Similar entities mentioned because similar entities should be grouped together
-        5. Rules with same meaning should not exist in existing rules
-        
-        Provide a structured response with:
-        - Whether there are any issues (true/false)
-        - List of specific issues found
-        - Detailed explanation for each issue
-        """
+{existing_rules_text}
 
+{new_rule_text}
+
+Analyze the new rule for:
+1. Contradictions with existing rules if there is any
+2. Ambiguous statements
+3. Overlapping content with existing rules if there is any
+4. Similar entities mentioned because similar entities should be grouped together
+5. Rules with same meaning should not exist in existing rules if there is any
+
+Format your response exactly as follows:
+
+ISSUES_FOUND: [true/false]
+DETECTED_ISSUES:
+1. [First issue title]
+- [Detailed explanation]
+
+2. [Second issue title]
+- [Detailed explanation]
+
+RECOMMENDATIONS:
+1. [First recommendation]
+2. [Second recommendation]
+
+If no issues are found, respond with:
+ISSUES_FOUND: false
+NO_ISSUES_DETECTED
+"""
+        logger.info(prompt)
         try:
             response = completion(
                 model=self.model,
@@ -75,19 +92,24 @@ class LLMSemanticValidator:
             # Parse LLM response
             analysis = response.choices[0].message.content
 
-            # Simple parsing (you might want to make this more robust)
+            # Format the analysis with proper line breaks
+            formatted_analysis = analysis.replace('ISSUES_FOUND:', '\nISSUES_FOUND:')
+            formatted_analysis = formatted_analysis.replace('DETECTED_ISSUES:', '\nDETECTED_ISSUES:')
+            formatted_analysis = formatted_analysis.replace('RECOMMENDATIONS:', '\nRECOMMENDATIONS:')
+
+            # Determine if there are issues
             has_issues = "true" in analysis.lower()
 
             return {
                 "has_issues": has_issues,
-                "analysis": analysis
+                "analysis": formatted_analysis
             }
 
         except Exception as e:
             logger.error(f"Error in LLM analysis: {str(e)}")
             return {
                 "has_issues": True,
-                "analysis": f"Error in analysis: {str(e)}"
+                "analysis": f"Error in analysis:\n{str(e)}"
             }
 
 

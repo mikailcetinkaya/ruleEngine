@@ -93,8 +93,17 @@ def main():
                     rule_manager.add_rule(new_rule, validation_result["rule_id"])
                     st.success(f"Rule saved successfully! Generated title: {title}")
                 else:
-                    st.error(
-                        f"Rule validation failed: {validation_result['message']}\r\n{validation_result['details']}")
+                    # Format the validation details with proper line breaks
+                    details = validation_result['details'].replace('\n', '<br>')
+                    error_message = f"""
+                    ❌ Rule validation failed:
+                    
+                    **Reason**: {validation_result['message']}
+                    
+                    **Details**:
+                    {details}
+                    """
+                    st.markdown(error_message, unsafe_allow_html=True)
 
     with display_col:
         # Display existing rules

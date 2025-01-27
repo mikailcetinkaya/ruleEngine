@@ -1,7 +1,7 @@
 import logging
-from typing import Optional, Dict
-from litellm import completion
 import re
+
+from litellm import completion
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -1,9 +1,10 @@
-import qdrant_client as qc
-from qdrant_client.http import models
-from typing import List, Dict, Optional
-import numpy as np
 import logging
 import uuid
+from typing import List, Dict, Optional
+
+import numpy as np
+import qdrant_client as qc
+from qdrant_client.http import models
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

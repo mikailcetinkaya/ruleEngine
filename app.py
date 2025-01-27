@@ -1,6 +1,7 @@
 import json
 import logging
 from typing import List, Dict
+
 import streamlit as st
 
 from rule_manager import RuleManager

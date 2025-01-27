@@ -1,8 +1,10 @@
-import numpy as np
-from sentence_transformers import SentenceTransformer
-from typing import Dict, List, Tuple
 import logging
 import uuid
+from typing import Dict, List, Tuple
+
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
 from vector_db import VectorDB
 
 logging.basicConfig(level=logging.INFO)

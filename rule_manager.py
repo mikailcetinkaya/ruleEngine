@@ -1,6 +1,8 @@
 import json
 from datetime import datetime
+
 from vector_db import VectorDB
+
 
 class RuleManager:
     def __init__(self, repository_file='rules_repository.json'):

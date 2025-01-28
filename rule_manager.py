@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 
 from vector_db import VectorDB
@@ -61,6 +62,24 @@ class RuleManager:
             self.save_rules()
             return True
         return False
+    def update_rule(self, index: int, updated_rule: dict) -> bool:
+        """Update an existing rule"""
+        try:
+            old_rule_id = self.rules[index].get('rule_id')
+
+            # Delete old embeddings
+            if old_rule_id:
+                self.vector_db.delete_rule_embeddings(old_rule_id)
+            rules = self.get_rules()
+            if 0 <= index < len(rules):
+                rules[index] = updated_rule
+                self.save_rules()
+
+                return True
+            return False
+        except Exception as e:
+            logging.error(f"Error updating rule: {str(e)}")
+            return False
 
     def get_rules(self):
         """Get all rules from the repository"""

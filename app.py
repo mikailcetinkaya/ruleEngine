@@ -24,28 +24,79 @@ def display_rule(rule: Dict, index: int, rule_manager: RuleManager):
 
         with col1:
             st.markdown("### Context")
-            # Display context with proper formatting
-            formatted_context = format_rule_context(rule['context'])
-            st.text_area(
-                "Rule Context",
-                value=formatted_context,
-                height=300,
-                key=f"context_{index}",
-                disabled=True
-            )
+            # Check if we're editing this rule
+            if st.session_state.editing_rule == index:
+                # Show editable text area
+                new_context = st.text_area(
+                    "Edit Rule Context",
+                    value=rule['context'],
+                    height=300,
+                    key=f"edit_context_{index}"
+                )
+
+                # Add Save and Cancel buttons
+                if st.button("Save", key=f"save_{index}"):
+                    # Generate new title for edited context
+                    new_title = generate_title(new_context)
+                    updated_rule = {
+                        "title": new_title,
+                        "context": format_rule_context(new_context)
+                    }
+
+                    # Get all rules except the one being edited
+                    current_rules = [r for i, r in enumerate(st.session_state.rules) if i != index]
+
+                    # Validate the updated rule
+                    validation_result = validate_rule(updated_rule, current_rules)
+                    logging.info(validation_result)
+                    if validation_result["is_valid"]:
+                        # Update the rule
+                        if rule_manager.update_rule(index, updated_rule):
+                            st.session_state.rules = rule_manager.get_rules()
+                            st.session_state.editing_rule = None
+                            st.success("Rule updated successfully!")
+                            st.rerun()
+                    else:
+                        # Format the validation details with proper line breaks
+                        details = validation_result['details'].replace('\n', '<br>')
+                        error_message = f"""
+                        ❌ Rule validation failed:
+                        
+                        **Reason**: {validation_result['message']}
+                        
+                        **Details**:
+                        {details}
+                        """
+                        st.markdown(error_message, unsafe_allow_html=True)
+
+                if st.button("Cancel", key=f"cancel_{index}"):
+                    st.session_state.editing_rule = None
+                    st.rerun()
+            else:
+                # Display context with proper formatting
+                formatted_context = format_rule_context(rule['context'])
+                st.text_area(
+                    "Rule Context",
+                    value=formatted_context,
+                    height=300,
+                    key=f"context_{index}",
+                    disabled=True
+                )
 
         with col2:
             st.markdown("### Metadata")
             st.write("Created:", rule.get('created_at', 'N/A'))
 
-            # Add action buttons
-            if st.button("Edit", key=f"edit_{index}"):
-                st.session_state.editing_rule = index
-
-            if st.button("Delete", key=f"delete_{index}"):
-                if rule_manager.delete_rule(index):  # Use RuleManager's delete_rule method
-                    st.session_state.rules = rule_manager.get_rules()
+            # Only show Edit/Delete buttons when not editing
+            if st.session_state.editing_rule != index:
+                if st.button("Edit", key=f"edit_{index}"):
+                    st.session_state.editing_rule = index
                     st.rerun()
+
+                if st.button("Delete", key=f"delete_{index}"):
+                    if rule_manager.delete_rule(index):
+                        st.session_state.rules = rule_manager.get_rules()
+                        st.rerun()
 
 
 def main():
@@ -87,7 +138,7 @@ def main():
 
                 # Validate rule against existing rules
                 validation_result = validate_rule(new_rule, st.session_state.rules)
-
+                logging.info(validation_result)
                 if validation_result["is_valid"]:
                     st.session_state.rules.append(new_rule)
                     rule_manager.add_rule(new_rule, validation_result["rule_id"])
@@ -114,28 +165,6 @@ def main():
                 display_rule(rule, idx, rule_manager)
         else:
             st.info("No rules added yet. Create your first rule using the form on the left.")
-
-
-def load_rules() -> List[Dict]:
-    """Load rules from JSON file with error handling"""
-    try:
-        with open('rules_repository.json', 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
-    except json.JSONDecodeError:
-        st.error("Error reading rules file. File may be corrupted.")
-        return []
-
-
-def save_rules(rules: List[Dict]):
-    """Save rules to JSON file with error handling"""
-    try:
-        with open('rules_repository.json', 'w', encoding='utf-8') as f:
-            json.dump(rules, f, indent=2, ensure_ascii=False)
-    except Exception as e:
-        st.error(f"Error saving rules: {str(e)}")
-
 
 if __name__ == "__main__":
     main()

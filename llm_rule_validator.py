@@ -27,8 +27,9 @@ class LLMSemanticValidator:
         self.system_prompt = """You are a rule validation assistant. Your task is to:
         1. Check for contradictions between rules
         2. Identify any ambiguous statements
-        3. Detect overlapping content or redundant rules
+        3. Detect redundant rules
         4. Respond with a structured analysis
+        5. Use only given states of rules donot make assumptions
         
         Respond with:
         - has_issues: true/false
@@ -56,9 +57,8 @@ class LLMSemanticValidator:
 Analyze the new rule for:
 1. Contradictions with existing rules if there is any
 2. Ambiguous statements
-3. Overlapping content with existing rules if there is any
+3. Redundancy with existing rules if there is any
 4. Similar entities mentioned because similar entities should be grouped together
-5. Rules with same meaning should not exist in existing rules if there is any
 
 Format your response exactly as follows:
 

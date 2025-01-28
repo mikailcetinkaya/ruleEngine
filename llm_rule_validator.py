@@ -25,7 +25,7 @@ class LLMSemanticValidator:
         """Initialize the SemanticValidator with LLM integration"""
         self.model = model_name
         self.system_prompt = """You are a rule validation assistant. Your task is to:
-        1. Check for contradictions between rules
+        1. Check for any direct contradictions between rules
         2. Identify any ambiguous statements
         3. Detect redundant rules
         4. Respond with a structured analysis

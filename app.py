@@ -149,9 +149,19 @@ def validate_and_save_rule(context: str, rule_manager: RuleManager, existing_rul
 
     # Validate rule
     validation_result = validate_rule(rule, rules_to_check)
+    logging.info("Validation Result:")
     logging.info(validation_result)
 
-    if validation_result["is_valid"]:
+    # Parse the analysis details
+    analysis = validation_result["details"]
+    can_coexist = validation_result.get("can_coexist", False)
+    direct_contradictions = validation_result.get("direct_contradictions", [])
+    ambiguous_statements = validation_result.get("ambiguous_statements", [])
+    redundant_rules = validation_result.get("redundant_rules", [])
+    grouping_of_similar_entities = validation_result.get("grouping_of_similar_entities", "")
+    structured_analysis_summary = validation_result.get("structured_analysis_summary", "")
+
+    if can_coexist:
         if index is None:
             # Add new rule
             rule_manager.add_rule(rule, validation_result["rule_id"])
@@ -159,20 +169,41 @@ def validate_and_save_rule(context: str, rule_manager: RuleManager, existing_rul
             # Update existing rule
             rule_manager.update_rule(index, rule)
 
+        # Format successful validation details
+        formatted_details = f"""
+        📝 **Validation Analysis**:
+        <br>🤝 **Can coexist with other rules:** {can_coexist}
+        <br>⚠️ **Direct Contradictions:** {', '.join(direct_contradictions) if direct_contradictions else 'None'}
+        <br>❓ **Ambiguous Statements:** {', '.join(ambiguous_statements) if ambiguous_statements else 'None'}
+        <br>🔄 **Redundant Rules:** {', '.join(redundant_rules) if redundant_rules else 'None'}
+        <br>📑 **Grouping of Similar Entities:** {grouping_of_similar_entities}
+        <br>📋 **Analysis Summary:** {structured_analysis_summary}
+        """.replace('\n', '<br>')
+
         return {
             "success": True,
-            "message": f"✔️ Rule {'updated' if index is not None else 'saved'} successfully! Title: {title}"
+            "message": f"""
+            ✔️ Rule {'updated' if index is not None else 'saved'} successfully! Title: {title}
+
+            {formatted_details}
+            """
         }
     else:
-        # Format validation error details
-        details = validation_result['details'].replace('\n', '<br>')
+        # Format validation error details with structured sections
+        formatted_details = f"""
+        📝 **Validation Analysis**:
+        <br>🤝 **Can coexist with other rules:** {can_coexist}
+        <br>⚠️ **Direct Contradictions:** {', '.join(direct_contradictions) if direct_contradictions else 'None'}
+        <br>❓ **Ambiguous Statements:** {', '.join(ambiguous_statements) if ambiguous_statements else 'None'}
+        <br>🔄 **Redundant Rules:** {', '.join(redundant_rules) if redundant_rules else 'None'}
+        <br>📑 **Grouping of Similar Entities:** {grouping_of_similar_entities}
+        <br>📋 **Analysis Summary:** {structured_analysis_summary}
+        """.replace('\n', '<br>')
+
         error_message = f"""
         ❌ Rule validation failed:
-        
-        ❓**Reason**: {validation_result['message']}
-        
-        📇**Details**:
-        {details}
+
+        {formatted_details}
         """
         return {
             "success": False,

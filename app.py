@@ -36,38 +36,14 @@ def display_rule(rule: Dict, index: int, rule_manager: RuleManager):
 
                 # Add Save and Cancel buttons
                 if st.button("Save", key=f"save_{index}"):
-                    # Generate new title for edited context
-                    new_title = generate_title(new_context)
-                    updated_rule = {
-                        "title": new_title,
-                        "context": format_rule_context(new_context)
-                    }
-
-                    # Get all rules except the one being edited
-                    current_rules = [r for i, r in enumerate(st.session_state.rules) if i != index]
-
-                    # Validate the updated rule
-                    validation_result = validate_rule(updated_rule, current_rules)
-                    logging.info(validation_result)
-                    if validation_result["is_valid"]:
-                        # Update the rule
-                        if rule_manager.update_rule(index, updated_rule):
-                            st.session_state.rules = rule_manager.get_rules()
-                            st.session_state.editing_rule = None
-                            st.success("Rule updated successfully!")
-                            st.rerun()
+                    result = validate_and_save_rule(new_context, rule_manager, st.session_state.rules, index)
+                    if result["success"]:
+                        st.session_state.rules = rule_manager.get_rules()
+                        st.session_state.editing_rule = None
+                        st.success(result["message"])
+                        st.rerun()
                     else:
-                        # Format the validation details with proper line breaks
-                        details = validation_result['details'].replace('\n', '<br>')
-                        error_message = f"""
-                        ❌ Rule validation failed:
-                        
-                        **Reason**: {validation_result['message']}
-                        
-                        **Details**:
-                        {details}
-                        """
-                        st.markdown(error_message, unsafe_allow_html=True)
+                        st.markdown(result["message"], unsafe_allow_html=True)
 
                 if st.button("Cancel", key=f"cancel_{index}"):
                     st.session_state.editing_rule = None
@@ -127,34 +103,12 @@ def main():
             submitted = st.form_submit_button("Submit Rule")
 
             if submitted and context:
-                # Generate title using Gemini
-                title = generate_title(context)
-
-                # Create rule object with formatted context
-                new_rule = {
-                    "title": title,
-                    "context": format_rule_context(context)
-                }
-
-                # Validate rule against existing rules
-                validation_result = validate_rule(new_rule, st.session_state.rules)
-                logging.info(validation_result)
-                if validation_result["is_valid"]:
-                    st.session_state.rules.append(new_rule)
-                    rule_manager.add_rule(new_rule, validation_result["rule_id"])
-                    st.success(f"Rule saved successfully! Generated title: {title}")
+                result = validate_and_save_rule(context, rule_manager, st.session_state.rules)
+                if result["success"]:
+                    st.session_state.rules = rule_manager.get_rules()
+                    st.success(result["message"])
                 else:
-                    # Format the validation details with proper line breaks
-                    details = validation_result['details'].replace('\n', '<br>')
-                    error_message = f"""
-                    ❌ Rule validation failed:
-                    
-                    **Reason**: {validation_result['message']}
-                    
-                    **Details**:
-                    {details}
-                    """
-                    st.markdown(error_message, unsafe_allow_html=True)
+                    st.markdown(result["message"], unsafe_allow_html=True)
 
     with display_col:
         # Display existing rules
@@ -165,6 +119,66 @@ def main():
                 display_rule(rule, idx, rule_manager)
         else:
             st.info("No rules added yet. Create your first rule using the form on the left.")
+
+
+def validate_and_save_rule(context: str, rule_manager: RuleManager, existing_rules: List[Dict],
+                           index: int = None) -> Dict:
+    """
+    Validate and save a rule, either as new or updated.
+
+    Args:
+        context: The rule context to validate and save
+        rule_manager: RuleManager instance
+        existing_rules: List of existing rules
+        index: Index of rule being edited (None for new rules)
+
+    Returns:
+        Dict containing success status and message
+    """
+    # Generate title
+    title = generate_title(context)
+
+    # Create rule object with formatted context
+    rule = {
+        "title": title,
+        "context": format_rule_context(context)
+    }
+
+    # For updates, exclude the current rule from validation
+    rules_to_check = existing_rules if index is None else [r for i, r in enumerate(existing_rules) if i != index]
+
+    # Validate rule
+    validation_result = validate_rule(rule, rules_to_check)
+    logging.info(validation_result)
+
+    if validation_result["is_valid"]:
+        if index is None:
+            # Add new rule
+            rule_manager.add_rule(rule, validation_result["rule_id"])
+        else:
+            # Update existing rule
+            rule_manager.update_rule(index, rule)
+
+        return {
+            "success": True,
+            "message": f"✔️ Rule {'updated' if index is not None else 'saved'} successfully! Title: {title}"
+        }
+    else:
+        # Format validation error details
+        details = validation_result['details'].replace('\n', '<br>')
+        error_message = f"""
+        ❌ Rule validation failed:
+        
+        ❓**Reason**: {validation_result['message']}
+        
+        📇**Details**:
+        {details}
+        """
+        return {
+            "success": False,
+            "message": error_message
+        }
+
 
 if __name__ == "__main__":
     main()

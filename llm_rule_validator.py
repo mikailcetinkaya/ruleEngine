@@ -55,9 +55,9 @@ class LLMSemanticValidator:
 {new_rule_text}
 
 Analyze the new rule for:
-1. Contradictions with existing rules if there is any
+1. Contradictions beyond specification with existing rules if there is any , give examples
 2. Ambiguous statements
-3. Redundancy with existing rules if there is any
+3. Redundancy with existing rules if there is any, give examples
 4. Similar entities mentioned because similar entities should be grouped together
 
 Format your response exactly as follows:

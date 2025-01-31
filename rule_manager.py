@@ -37,11 +37,14 @@ class RuleManager:
         if 0 <= index < len(self.rules):
             rule = self.rules[index]
             rule_id = rule.get('rule_id')
-            
+            logging.info("ENTER DELETE")
             # Delete from vector database if rule_id exists
-            if rule_id:
-                self.vector_db.delete_rule_embeddings(rule_id)
-            
+            try:
+                if rule_id:
+                    self.vector_db.delete_rule_embeddings(rule_id)
+            except Exception as e:
+                logging.error(f"no deletion for {rule_id} {e}")
+            logging.info("HAPPY")
             del self.rules[index]
             self.save_rules()
             return True

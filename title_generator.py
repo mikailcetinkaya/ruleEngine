@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class TitleGenerator:
     def __init__(self):
-        self.max_words = 10
+        self.max_words = 20
         self.min_words = 3
         self.default_prefix = "Rule"
 
@@ -20,7 +20,7 @@ class TitleGenerator:
         # Remove extra whitespace
         title = ' '.join(title.split())
         # Capitalize first letter of each word
-        title = title.title()
+        title = title.title().replace(':',' ')
         return title
 
     def _validate_title(self, title: str) -> bool:
@@ -62,14 +62,14 @@ class TitleGenerator:
         Generate a title asynchronously using Gemini
         """
         prompt = f"""
-        Create a concise and descriptive title (3-10 words) for a rule with the following context.
-        The title should be clear, professional, and capture the main purpose of the rule.
+        Create a concise and descriptive title (3-20 words) for a rule with the following context.
+        The title should be clear, professional, and capture detailed purpose of the rule.
 
         Context:
         {context}
 
         Requirements:
-        - Title should be 3-10 words
+        - Title should be 3-20 words
         - Must be clear and descriptive
         - Should capture the main focus of the rule
         - Use professional language

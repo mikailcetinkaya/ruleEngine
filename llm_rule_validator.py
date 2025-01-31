@@ -91,7 +91,7 @@ Structured Analysis Summary: [summary]
 
             for line in lines:
                 if line.startswith("Can coexist with other rules:"):
-                    can_coexist = line.split(":")[1].strip().lower() == "true"
+                    can_coexist = "true" in line.split(":")[1].strip().lower()
                 elif line.startswith("Direct Contradictions:"):
                     direct_contradictions = line.split(":")[1].strip().split(", ")
                 elif line.startswith("Ambiguous Statements:"):
@@ -104,7 +104,7 @@ Structured Analysis Summary: [summary]
                     structured_analysis_summary = line.split(":")[1].strip()
 
             # Determine if there are issues
-            has_issues = not can_coexist or direct_contradictions or ambiguous_statements or redundant_rules
+            has_issues = not can_coexist or '[]' not in direct_contradictions  or '[]' not in ambiguous_statements or '[]' not in redundant_rules
 
             return {
                 "has_issues": has_issues,

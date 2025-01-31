@@ -106,7 +106,7 @@ def main():
                 result = validate_and_save_rule(context, rule_manager, st.session_state.rules)
                 if result["success"]:
                     st.session_state.rules = rule_manager.get_rules()
-                    st.success(result["message"])
+                    st.markdown(result["message"])
                 else:
                     st.markdown(result["message"], unsafe_allow_html=True)
 
@@ -154,14 +154,16 @@ def validate_and_save_rule(context: str, rule_manager: RuleManager, existing_rul
 
     # Parse the analysis details
     analysis = validation_result["details"]
-    can_coexist = validation_result.get("can_coexist", False)
-    direct_contradictions = validation_result.get("direct_contradictions", [])
-    ambiguous_statements = validation_result.get("ambiguous_statements", [])
-    redundant_rules = validation_result.get("redundant_rules", [])
-    grouping_of_similar_entities = validation_result.get("grouping_of_similar_entities", "")
-    structured_analysis_summary = validation_result.get("structured_analysis_summary", "")
+    has_issues = analysis.get("has_issues")
+    logging.info(f"has_issues {has_issues}")
+    can_coexist = analysis.get("can_coexist", False)
+    direct_contradictions = analysis.get("direct_contradictions", [])
+    ambiguous_statements = analysis.get("ambiguous_statements", [])
+    redundant_rules = analysis.get("redundant_rules", [])
+    grouping_of_similar_entities = analysis.get("grouping_of_similar_entities", "")
+    structured_analysis_summary = analysis.get("structured_analysis_summary", "")
 
-    if can_coexist:
+    if not has_issues:
         if index is None:
             # Add new rule
             rule_manager.add_rule(rule, validation_result["rule_id"])
@@ -171,13 +173,13 @@ def validate_and_save_rule(context: str, rule_manager: RuleManager, existing_rul
 
         # Format successful validation details
         formatted_details = f"""
-        📝 **Validation Analysis**:
-        <br>🤝 **Can coexist with other rules:** {can_coexist}
-        <br>⚠️ **Direct Contradictions:** {', '.join(direct_contradictions) if direct_contradictions else 'None'}
-        <br>❓ **Ambiguous Statements:** {', '.join(ambiguous_statements) if ambiguous_statements else 'None'}
-        <br>🔄 **Redundant Rules:** {', '.join(redundant_rules) if redundant_rules else 'None'}
-        <br>📑 **Grouping of Similar Entities:** {grouping_of_similar_entities}
-        <br>📋 **Analysis Summary:** {structured_analysis_summary}
+        📋 **Analysis Summary:** {structured_analysis_summary}
+        ⚠️ **Direct Contradictions:** {', '.join(direct_contradictions) if direct_contradictions else 'None'}
+        ❓ **Ambiguous Statements:** {', '.join(ambiguous_statements) if ambiguous_statements else 'None'}
+        🔄 **Redundant Rules:** {', '.join(redundant_rules) if redundant_rules else 'None'}
+        📑 **Grouping of Similar Entities:** {grouping_of_similar_entities}
+        🤝 **Can coexist with other rules:** {can_coexist}
+        
         """.replace('\n', '<br>')
 
         return {
@@ -191,18 +193,16 @@ def validate_and_save_rule(context: str, rule_manager: RuleManager, existing_rul
     else:
         # Format validation error details with structured sections
         formatted_details = f"""
-        📝 **Validation Analysis**:
-        <br>🤝 **Can coexist with other rules:** {can_coexist}
-        <br>⚠️ **Direct Contradictions:** {', '.join(direct_contradictions) if direct_contradictions else 'None'}
-        <br>❓ **Ambiguous Statements:** {', '.join(ambiguous_statements) if ambiguous_statements else 'None'}
-        <br>🔄 **Redundant Rules:** {', '.join(redundant_rules) if redundant_rules else 'None'}
-        <br>📑 **Grouping of Similar Entities:** {grouping_of_similar_entities}
-        <br>📋 **Analysis Summary:** {structured_analysis_summary}
+        📋 **Analysis Summary:** {structured_analysis_summary}        
+        ⚠️ **Direct Contradictions:** {', '.join(direct_contradictions) if direct_contradictions else 'None'}
+        ❓ **Ambiguous Statements:** {', '.join(ambiguous_statements) if ambiguous_statements else 'None'}
+        🔄 **Redundant Rules:** {', '.join(redundant_rules) if redundant_rules else 'None'}
+        📑 **Grouping of Similar Entities:** {grouping_of_similar_entities}
+        🤝 **Can coexist with other rules:** {can_coexist}        
         """.replace('\n', '<br>')
 
         error_message = f"""
         ❌ Rule validation failed:
-
         {formatted_details}
         """
         return {

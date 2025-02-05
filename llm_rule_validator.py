@@ -28,12 +28,13 @@ class LLMSemanticValidator:
         1. Check for any direct contradictions between rules  ignore non existent cases
         2. Ignore potential or non direct contradictions
         3. Identify any ambiguous statements
-        4. Detect redundant rules
-        5. Ignore potential or non direct redundancies        
-        6. Use only given states of rules donot make assumptions
-        7. Do not guess for additions or modifications of rules
-        8. Similar entities should be grouped together
-        9. Respond with a structured analysis
+        4. Detect any direct redundant rules
+        5. Ignore potential or non direct redundancies between rules
+        6. Narrower scope overcomes redundancy  
+        7. Use only given states of rules donot make assumptions
+        8. Do not guess for additions or modifications of rules
+        9. Similar entities should be grouped together
+        10. Respond with a structured analysis
         """
 
     def _preprocess_text(self, text: str) -> str:

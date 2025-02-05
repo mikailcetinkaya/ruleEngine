@@ -1,14 +1,58 @@
 [
   {
-    "title": "Preserve Listed Phrases As-Is",
-    "context": "Condition : when a phrase is in below list\nAction : use as is\nacquirer : acquirer\nissuer : issuer\nclearing : clearing\nAuthorization : Authorization\nalphanumeric : alphanumeric\nonline : online\nprocessors : processors\nproduct code : product code\nwallet ID : wallet ID\nDE : DE\nSubfield : SF\nSubelement : SE\nData Element : Data Element\nData Integrity : Data Integrity\ntoken : token\nPrimary Account Number : Primary Account Number\nDual Message System : Dual Mesaj Sistemi\nSingle Message System : Single Mesaj Sistemi\nTrace ID : Trace ID\ncore : core\ninitiatives : initiatives\nnetwork : network\nreversal : reversal\nCentral Time : Central Time\nswitch : switch\nrelease : release\nfreeze : freeze\npeak : peak\nscript : script\nflag : flag\nwindows : windows\ndispute : dispute\nendpoint : endpoint\nvendor : vendor\nfoils : foils\nsheets : sheets\nemboss : emboss\nhologram : hologram\nworkshop : workshop\nworkstream : workstream\nonboarding : onboarding\nsheet : sheet\nstand-in : stand-in\nacceptor : acceptor\nlevel : level\ninterchange rate designator (IRD) : interchange rate designator (IRD)\ndataset : dataset\nfield : field\nquasi-cash : quasi-cash\nbypass : bypass\nopt-in : opt-in\nTier : Tier\ndeployment : deployment",
-    "created_at": "2025-01-30T21:21:08.617441",
-    "rule_id": "2880fffa-8a58-4958-ad54-e3c9bfbafb24"
+    "title": "Preservation Of Standardized Terminology List",
+    "context": "Condition : when a phrase is in below list\nAction : use as is\nacquirer\nissuer\nclearing\nAuthorization\nalphanumeric\nonline\nmerchant\nprocessors\nproduct code\nwallet ID\nDE\nSubfield\nSubelement\nData Element\nData Integrity\ntoken\nPrimary Account Number\nmandate\nDual Message System\nSingle Message System\nTrace ID\ncore\ninitiatives\nnetwork\nreversal\nrefund\nCentral Time\nswitch\nrelease\nfreeze\npeak\nscript\nflag\ninterchange\nwindows\ndispute\nprepaid\ndebit\ncredit\ncompliance\ncardholder\nbaseline\nthreshold\nvalidations\ndecline\nendpoint\nvendor\nfoils\nsheets\nemboss\nhologram\nworkshop\nworkstream\nonboarding\nsheet\nstand-in\nacceptor\nlevel\ninterchange rate designator (IRD)\nnear-real time\nCNP/card-not-present\nKey Performance Indicators/ KPIs\nconsumer\ncommercial\nunique\ndataset\nfield\nquasi-cash\nbypass\nopt-in\nTier\nmaintenance\ndeployment\ngraduated",
+    "created_at": "2025-02-05T23:34:19.489619",
+    "rule_id": "bb342c18-905c-4646-80f1-09c2e647e307"
   },
   {
-    "title": "Phrase Translation And Replacement Rule For Turkish Equivalents",
-    "context": "Condition : when a phrase is in below list\nAction : use correspondant in the list that states original with  Turkish meaning in parantheses\nmerchant : merchant (i\u015fyeri)\nmandate : mandate (zorunluluk)\nrefund : refund (iade)\ninterchange : interchange (takas)\nprepaid : prepaid (\u00f6n \u00f6demeli)\ndebit : debit (banka kart\u0131)\ncredit : credit (kredi)\ncompliance : compliance (uyumluluk)\ncardholder : cardholder (kart sahibi)\nthreshold : threshold (e\u015fik)\nvalidations : validations (do\u011frulamalar)\ndecline : decline (red)\nsmall and middle enterprises (SME) : k\u00fc\u00e7\u00fck ve orta \u00f6l\u00e7ekli i\u015fletmeler/small and middle enterprises (SME)\naccount manager/account representative : account temsilcisi\nwithdrawal transactions : Para \u00e7ekme (withdrawal) i\u015flemleri\nnear-real time : near-real time (neredeyse ger\u00e7ek zamanl\u0131)\nCNP/card-not-present : kart-sahibi olmadan (CNP - card-not-present)\nKey Performance Indicators/KPIs : Temel performans g\u00f6stergeleri (Key Performance Indicators - KPIs)\nconsumer : consumer (t\u00fcketici)\ncommercial : commercial (ticari)\nmaintenance : maintenance (bak\u0131m)",
-    "created_at": "2025-01-31T18:51:04.237254",
-    "rule_id": "663d3bf2-7cb5-4344-84cb-cd8beec91748"
+    "title": "Phrase Translation  Mandatory Use Of Correspondent Terms For Smes And Account Management",
+    "context": "Condition : when a phrase is in below list\nAction : use correspondent only\nsmall and middle enterprises (SME) : k\u00fc\u00e7\u00fck ve orta \u00f6l\u00e7ekli i\u015fletmeler\naccount manager/ account representative : account temsilcisi\nwithdrawal transactions : Para \u00e7ekme (withdrawal) i\u015flemleri",
+    "created_at": "2025-02-05T23:38:24.109172",
+    "rule_id": "de74b208-9ddb-4266-a294-60550cab2393"
+  },
+  {
+    "title": "English Phrase Translation For Specified Terminology",
+    "context": "Condition : when a phrase is in below list\nAction : use english phrase with turkish translation in parantheses\nmerchant (i\u015fyeri)\nmandate (zorunluluk)\ninitiatives (giri\u015fim)\nrefund (iade)\nrelease (s\u00fcr\u00fcm)\ninterchange (takas)\nprepaid (\u00f6n \u00f6demeli)\ndebit (banka kart\u0131)\ncredit (kredi)\ncompliance (uyumluluk)\ncardholder (kart sahibi)\nthreshold (e\u015fik)\nvalidations (do\u011frulamalar)\ndecline (red)\nPara \u00e7ekme (withdrawal) i\u015flemleri\nnear-real time (neredeyse ger\u00e7ek zamanl\u0131)\nkart-sahibi olmadan (CNP - card-not-present)\nTemel performans g\u00f6stergeleri (Key Performance Indicators - KPIs)\nconsumer (t\u00fcketici)\ncommercial (ticari)\nmaintenance (bak\u0131m)\ncompliance (kurallara uyum)\nmagnetic stripe encoding (manyetik \u015ferit kodlama)\nlaser printing (lazer bask\u0131)\nindent printing (\u00e7ukur bask\u0131)"
+  },
+  {
+    "title": "English-Only Headings, Titles, And Column Headers",
+    "context": "Condition : \u0130ngilizce ba\u015fl\u0131k, tablo isimleri ve tablo kolon ba\u015fl\u0131klar\u0131\nExample ;\n# Issuer Duty\nFigure 5.3 Acquirer messages\nAction :  \u0130ngilizce olarak b\u0131rakarak T\u00fcrk\u00e7e kar\u015f\u0131l\u0131klar\u0131n\u0131 parantez i\u00e7erisinde belirt.\nExample;\n# Issuer Duty (Issuer G\u00f6revi)\nFig\u00fcr 5.3 Acquirer mesaj\u0131"
+  },
+  {
+    "title": "Maintain English Terminology For Specific Program Elements",
+    "context": "B\u00fcltende yer alan \u201cprogram, servis, uygulama ad\u0131, kay\u0131t formu, ISO85853 mesaj tipi, product code, DE/data element, SE/subelement, SF/subfield, kay\u0131t i\u00e7in izlenmesi gereken ad\u0131m terimleri, Windows isimleri\u201d varsa \u0130ngilizce hali ile b\u0131rak",
+    "created_at": "2025-02-05T23:40:52.551153",
+    "rule_id": "49663988-5a60-4dcc-b9bc-6d2b95626e57"
+  },
+  {
+    "title": "Consistent Terminology And Translation Rules For Payment Processing Documentation",
+    "context": "Issuer kelimesi her zaman issuer, acquirer kelimesi her zaman acquirer, Processor kelimesi her zaman processor olarak kals\u0131n T\u00fcrk\u00e7e kar\u015f\u0131l\u0131klar\u0131n\u0131 yazma. T\u00fcrk\u00e7e ka\u015f\u0131l\u0131klar\u0131n\u0131 parantez i\u00e7inde de yazma\nDual Message System her zaman Dual Mesaj Sistemi, Single Message System her zaman Single Mesaj Sistemi olarak \u00e7evir.\nAuthorization kelimesi her zaman Otorizasyon, Clearing kelimesi her zaman Takasla\u015fma olarak \u00e7evir.\nSF/Subfield her zaman subfield (SF), SE/subelement her zaman subelement (SE), DE/data element her zaman data element (DE) olarak \u00e7evir\nCollection Only her zaman Collection Only olarak \u00e7evir",
+    "created_at": "2025-02-05T23:47:00.733697",
+    "rule_id": "898095c5-950d-4bfa-be9c-9d52b1b4430f"
+  },
+  {
+    "title": "Mandatory Turkish Translation Of Month Information In Date Fields",
+    "context": "Tarih bilgisinde yer alan ay bilgisini her zaman T\u00fcrk\u00e7eye \u00e7evir",
+    "created_at": "2025-02-05T23:48:03.976371",
+    "rule_id": "2ed86f79-a248-42d9-8fd2-d5583d84db1e"
+  },
+  {
+    "title": "Mandatory Translation Of Country Names Into Turkish",
+    "context": "\u00dclke isimlerini her zaman T\u00fcrk\u00e7eye \u00e7evir",
+    "created_at": "2025-02-05T23:49:20.235870",
+    "rule_id": "468102bb-567c-4828-8c44-360433294ad6"
+  },
+  {
+    "title": "Maintain English Terminology In Screen Examples",
+    "context": "Ekran \u00fczerinden \u00f6rnekli anlat\u0131m yap\u0131larak ekran\u0131n \u00fczerinde yer alan ba\u015fl\u0131k ya da isimlendirmeye yer veriliyorsa \u0130ngilizce hali ile b\u0131rak. \u00d6rnek olarak \u201cClick Visit the TRC in the Technical Resource Center panel\u201d gibi c\u00fcmlelere yer verilirse \u201cVisit the TRC\u201d ve \u201cTechnical Resource Center\u201d terimlerini \u0130ngilizce b\u0131rak. Bu mant\u0131\u011fa g\u00f6re kar\u015f\u0131na \u00e7\u0131kan di\u011fer terimleri de \u0130ngilizce hali ile b\u0131rak.",
+    "created_at": "2025-02-05T23:51:02.576672",
+    "rule_id": "c8cefdd1-6ecc-487c-be40-333e96942823"
+  },
+  {
+    "title": "Markdown Formatting Style Guide",
+    "context": "Keep markdown format specifiers.\nHeadings\nUse # for headings. Add more # for smaller headings.\nSyntax:\n# Heading 1\n## Heading 2\n### Heading 3\n#### Heading 4\n##### Heading 5\n###### Heading 6\n2. Emphasis\nBold: Use ** or __.\nItalic: Use * or _.\nBold and italic: Use *** or ___.\nSyntax:\n**Bold Text**\n*Italic Text*\n***Bold and Italic***\n3. Lists\n- Unordered Lists:\nUse -, *, or +.\nSyntax:\n- Item 1\n- Item 2\n- Subitem 2.1\n- Subitem 2.2\n* Item 3\n4. Links\n- Inline Link:\n[Link Text](https://example.com)\nRenders as: Link Text\n- Reference Link:\n[Link Text][1]\n[1]: https://example.com\n5. Images\nUse ![] followed by a URL.\nSyntax:\n![Alt Text](https://example.com/image.png)\nRenders as:\n6. Blockquotes\nUse > for blockquotes. Nest with multiple >.\nSyntax:\n> This is a blockquote.\n>> Nested blockquote.\n7. Code\n- Inline Code:\nWrap text with backticks `.\nSyntax:\nThis is `inline code`.\n- Code Block:\nUse triple backticks (```) with an optional language for syntax highlighting.\nSyntax:\n```javascript\nfunction example() {\nconsole.log(\"Hello, World!\");\n}\n8. Horizontal Rule\nUse three or more -, _, or *.\nSyntax:\nRenders as:\n9. Tables\nUse | to separate columns.\nSyntax:\n| Column 1 | Column 2 | Column 3 |\n|----------|----------|----------|\n| Row 1    | Data     | Data     |\n| Row 2    | Data     | Data     |\n10. Strikethrough\nUse ~~ to strike through text.\nSyntax:\n~~Strikethrough~~\n11. Checkboxes\nUse - [ ] for an unchecked box and - [x] for a checked box.\nSyntax:\n- [ ] Task 1\n- [x] Task 2 (completed)\n12. Escaping Characters\nUse a backslash \\ to escape special characters.\n\\*This text is not italicized\\*\n13. HTML in Markdown\nYou can embed HTML directly.\nSyntax:\n<b>Bold text</b>",
+    "created_at": "2025-02-06T00:46:32.262967",
+    "rule_id": "253ba7d4-21d6-4d5d-90e3-92230caea10e"
   }
 ]

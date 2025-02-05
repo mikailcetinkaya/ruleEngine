@@ -40,7 +40,7 @@ def display_rule(rule: Dict, index: int, rule_manager: RuleManager):
                     if result["success"]:
                         st.session_state.rules = rule_manager.get_rules()
                         st.session_state.editing_rule = None
-                        st.success(result["message"])
+                        st.markdown(result["message"], unsafe_allow_html=True)
                         st.rerun()
                     else:
                         st.markdown(result["message"], unsafe_allow_html=True)
@@ -106,7 +106,7 @@ def main():
                 result = validate_and_save_rule(context, rule_manager, st.session_state.rules)
                 if result["success"]:
                     st.session_state.rules = rule_manager.get_rules()
-                    st.markdown(result["message"])
+                    st.markdown(result["message"], unsafe_allow_html=True)
                 else:
                     st.markdown(result["message"], unsafe_allow_html=True)
 
@@ -186,7 +186,6 @@ def validate_and_save_rule(context: str, rule_manager: RuleManager, existing_rul
             "success": True,
             "message": f"""
             ✔️ Rule {'updated' if index is not None else 'saved'} successfully! Title: {title}
-
             {formatted_details}
             """
         }
